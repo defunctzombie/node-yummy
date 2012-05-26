@@ -11,7 +11,9 @@
   "scripts": {
     "test": "mocha"
   },
-  "dependencies": {},
+  "dependencies": {
+    "crumbs": "0.0.1"
+  },
   "devDependencies": {
     "mocha": "1.0.x",
     "connect": "2.3.x",
