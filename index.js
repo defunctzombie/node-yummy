@@ -16,6 +16,10 @@ module.exports = function (options) {
     // default value for session cookie
     var cookie_options = options.cookie;
 
+    if (!secret) {
+        throw new Error('`secret` required for yummy sessions');
+    }
+
     return function (req, res, next) {
         var raw = req.cookies[key];
         req.session = req.session || {};
