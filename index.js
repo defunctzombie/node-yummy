@@ -2,7 +2,7 @@
 var crypto = require('crypto');
 
 // 3rd party
-var crumbs = require('crumbs');
+var cookie = require('cookie');
 
 module.exports = function (options) {
     var options = options || {};
@@ -14,7 +14,10 @@ module.exports = function (options) {
     var secret = options.secret;
 
     // default value for session cookie
-    var cookie_options = options.cookie;
+    var cookie_options = options.cookie || {};
+
+    // default path is '/';
+    cookie_options.path = cookie_options.path || '/';
 
     if (!secret) {
         throw new Error('`secret` required for yummy sessions');
@@ -45,21 +48,15 @@ module.exports = function (options) {
 
         // create a cookie object using the saved cookie state
         // if no saved state, default object created
-        var cookie = new crumbs.Cookie(req.session.cookie || cookie_options);
+        var cookie_opt = req.session.cookie || cookie_options;
 
-        // why is this here?
-        if (req.session.cookie) {
-            var expires = req.session.cookie.expires;
-            cookie.expires = new Date(expires);
-        }
-
-        // for app access
-        req.session.cookie = cookie;
+        // for app access to set cookie options
+        req.session.cookie = cookie_opt;
 
         // clear all session variables
         req.session.reset = function() {
             req.session = {};
-            req.session.cookie = cookie;
+            req.session.cookie = cookie_opt;
         };
 
         // store original value to identify if cookie changed
@@ -84,7 +81,7 @@ module.exports = function (options) {
             val = cipher.update(val, 'utf8', 'base64');
             val += cipher.final('base64');
 
-            res.setHeader('Set-Cookie', req.session.cookie.serialize(key, val));
+            res.setHeader('Set-Cookie', cookie.serialize(key, val, req.session.cookie));
         });
 
         next();
