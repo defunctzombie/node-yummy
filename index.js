@@ -59,6 +59,12 @@ module.exports = function (options) {
             req.session.cookie = cookie_opt;
         };
 
+        // force refresh of the cookie, useful for rolling sessions
+        var refresh = false;
+        req.session.touch = function() {
+            refresh = true;
+        };
+
         // store original value to identify if cookie changed
         // if unchanged, it will not be resent to client
         var orig = JSON.stringify(req.session);
@@ -73,7 +79,7 @@ module.exports = function (options) {
             var val = JSON.stringify(req.session);
 
             // if the session data did not change no need to resend cookie
-            if (val === orig) {
+            if (val === orig && !refresh) {
                 return;
             }
 
