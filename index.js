@@ -4,6 +4,33 @@ var crypto = require('crypto');
 // 3rd party
 var cookie = require('cookie');
 
+var decode = function(cookies, key, secret) {
+    // accept a raw cookie header string
+    if (typeof cookies === 'string') {
+        cookies = cookie.parse(cookies);
+    }
+
+    var raw_cookie = cookies[key];
+    if (!raw_cookie) {
+        return {};
+    }
+
+    // try to decipher the session cookie
+    // if this fails we assume the cookie was altered or something bad happend
+    // in this case we clear the session state as if a blank session was started
+    var decipher = crypto.createDecipher('aes192', secret);
+    var body = decipher.update(raw_cookie, 'base64', 'utf8');
+    body += decipher.final('utf8');
+
+    try {
+        return JSON.parse(body);
+    } catch (e) {
+        // no-op, will default to empty session
+    }
+
+    return {};
+};
+
 module.exports = function (options) {
     var options = options || {};
 
@@ -24,27 +51,7 @@ module.exports = function (options) {
     }
 
     return function (req, res, next) {
-        var raw = req.cookies[key];
-        req.session = req.session || {};
-
-        // try to decipher the session cookie
-        // if this fails we assume the cookie was altered or something bad happend
-        // in this case we clear the session state as if a blank session was started
-        if (raw) {
-            var decipher = crypto.createDecipher('aes192', secret);
-            var body = decipher.update(raw, 'base64', 'utf8');
-            body += decipher.final('utf8');
-
-            try {
-                req.session = JSON.parse(body);
-            } catch (e) {
-                // bad parsing, clear session
-                // TODO option to send error to next?
-
-                // bad parse
-                req.session = {};
-            }
-        }
+        req.session = decode(req.cookies, key, secret);
 
         // create a cookie object using the saved cookie state
         // if no saved state, default object created
@@ -93,3 +100,6 @@ module.exports = function (options) {
         next();
     };
 };
+
+module.exports.decode = decode;
+
