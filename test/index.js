@@ -29,13 +29,15 @@ app.use(function(req, res){
 });
 
 test('foo', function(done) {
-    var server = app.listen(3000, function() {
-        request('http://localhost:3000', function(err, res, body) {
+    var server = app.listen(function() {
+        var addr = server.address();
+        var port = addr.port;
+        request('http://localhost:' + port, function(err, res, body) {
             assert.ok(!err);
 
             var cookie = res.headers['set-cookie'][0];
             assert.equal(body, 'hello world\n');
-            assert.equal(cookie, 'connect.sess=D3GwAkYil7UBsk3NBzW1RThSvV2FJPtR8cMDaDswJFYFgqsdXhN0Zw9ZssNraWL%2B; Path=/');
+            assert.equal(cookie, 'connect.sess=D3GwAkYil7UBsk3NBzW1RThSvV2FJPtR8cMDaDswJFYFgqsdXhN0Zw9ZssNraWL+; Path=/');
 
             server.close();
         });
@@ -47,11 +49,13 @@ test('foo', function(done) {
 });
 
 test('counter', function(done) {
-    var server = app.listen(3000, function() {
-        request('http://localhost:3000/increment', function(err, res, body) {
+    var server = app.listen(function() {
+        var addr = server.address();
+        var port = addr.port;
+        request('http://localhost:' + port + '/increment', function(err, res, body) {
             assert.ok(!err);
             assert.equal(body, 1);
-            request('http://localhost:3000/increment', function(err, res, body) {
+            request('http://localhost:' + port + '/increment', function(err, res, body) {
                 assert.ok(!err);
                 assert.equal(body, 2);
 

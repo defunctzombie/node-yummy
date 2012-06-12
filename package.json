@@ -12,7 +12,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "cookie": "0.0.2"
+    "cookie": "0.0.3"
   },
   "devDependencies": {
     "mocha": "1.0.x",
