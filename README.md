@@ -22,7 +22,7 @@ app.use(connect.cookieParser());
 app.use(yummy({
     // see notes about the secret below, this is important!!
     secret: '+lc|x[})E.S+ld2c@,u^abZ-v@jxJX,Y'
-});
+}));
 ```
 
 ## tell me more
