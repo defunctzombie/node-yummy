@@ -4,35 +4,6 @@ var crypto = require('crypto');
 // 3rd party
 var cookie = require('cookie');
 
-var cypher_algo = 'aes256';
-
-var decode = function(cookies, key, secret) {
-    // accept a raw cookie header string
-    if (typeof cookies === 'string') {
-        cookies = cookie.parse(cookies);
-    }
-
-    var raw_cookie = cookies[key];
-    if (!raw_cookie) {
-        return {};
-    }
-
-    // try to decipher the session cookie
-    // if this fails we assume the cookie was altered or something bad happend
-    // in this case we clear the session state as if a blank session was started
-    var decipher = crypto.createDecipher(cypher_algo, secret);
-    var body = decipher.update(raw_cookie, 'base64', 'utf8');
-    body += decipher.final('utf8');
-
-    try {
-        return JSON.parse(body);
-    } catch (e) {
-        // no-op, will default to empty session
-    }
-
-    return {};
-};
-
 module.exports = function (options) {
     var options = options || {};
 
@@ -45,6 +16,9 @@ module.exports = function (options) {
     // default value for session cookie
     var cookie_options = options.cookie || {};
 
+    // user can opt to use other algorithms
+    var algorithm = options.algorithm || 'aes256';
+
     // default path is '/';
     cookie_options.path = cookie_options.path || '/';
 
@@ -52,8 +26,36 @@ module.exports = function (options) {
         throw new Error('`secret` required for yummy sessions');
     }
 
-    return function (req, res, next) {
-        req.session = decode(req.cookies, key, secret);
+    // decode a cookie string or pull the cookie value from an object (cookies)
+    var decode = function(cookies) {
+        // accept a raw cookie header string
+        if (typeof cookies === 'string') {
+            cookies = cookie.parse(cookies);
+        }
+
+        var raw_cookie = cookies[key];
+        if (!raw_cookie) {
+            return {};
+        }
+
+        // try to decipher the session cookie
+        // if this fails we assume the cookie was altered or something bad happend
+        // in this case we clear the session state as if a blank session was started
+        var decipher = crypto.createDecipher(algorithm, secret);
+        var body = decipher.update(raw_cookie, 'base64', 'utf8');
+        body += decipher.final('utf8');
+
+        try {
+            return JSON.parse(body);
+        } catch (e) {
+            // no-op, will default to empty session
+        }
+
+        return {};
+    };
+
+    var middleware = function (req, res, next) {
+        req.session = decode(req.cookies);
 
         // create a cookie object using the saved cookie state
         // if no saved state, default object created
@@ -92,7 +94,7 @@ module.exports = function (options) {
                 return;
             }
 
-            var cipher = crypto.createCipher(cypher_algo, secret);
+            var cipher = crypto.createCipher(algorithm, secret);
             val = cipher.update(val, 'utf8', 'base64');
             val += cipher.final('base64');
 
@@ -101,7 +103,10 @@ module.exports = function (options) {
 
         next();
     };
-};
 
-module.exports.decode = decode;
+    // expose the decode method for use by websockets, etc
+    middleware.decode = decode;
+
+    return middleware;
+};
 
