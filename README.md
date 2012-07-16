@@ -40,3 +40,18 @@ You can configure yummy with the following options.
 #### path
 > the path of the session cookie (default is '/')
 
+## websockets
+
+If you want to authenticate users for websocket sessions, the middleware exposes a `decode` property. The property will decode cookie strings.
+
+```javascript
+
+var middleware = yummy({ secret: ... });
+
+// in the websocket auth
+// cookies is an object of cookie name -> values
+var session = middleware.decode(cookies);
+
+// session is now populated with the session data
+```
+
