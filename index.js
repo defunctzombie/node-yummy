@@ -4,6 +4,8 @@ var crypto = require('crypto');
 // 3rd party
 var cookie = require('cookie');
 
+var cypher_algo = 'aes256';
+
 var decode = function(cookies, key, secret) {
     // accept a raw cookie header string
     if (typeof cookies === 'string') {
@@ -18,7 +20,7 @@ var decode = function(cookies, key, secret) {
     // try to decipher the session cookie
     // if this fails we assume the cookie was altered or something bad happend
     // in this case we clear the session state as if a blank session was started
-    var decipher = crypto.createDecipher('aes192', secret);
+    var decipher = crypto.createDecipher(cypher_algo, secret);
     var body = decipher.update(raw_cookie, 'base64', 'utf8');
     body += decipher.final('utf8');
 
@@ -90,7 +92,7 @@ module.exports = function (options) {
                 return;
             }
 
-            var cipher = crypto.createCipher('aes192', secret);
+            var cipher = crypto.createCipher(cypher_algo, secret);
             val = cipher.update(val, 'utf8', 'base64');
             val += cipher.final('base64');
 
