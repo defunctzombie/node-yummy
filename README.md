@@ -37,6 +37,8 @@ You can configure yummy with the following options.
 ### cookie [optional]
 > the cookie options sets the default value for session cookies. You can
 
+> I would suggest setting `httpOnly: true` and `secure: true` for a more secure setup in production.
+
 #### maxAge
 > the max age of the cookie in milliseconds
 
