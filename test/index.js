@@ -11,7 +11,7 @@ var yummy = require('..');
 var app = connect();
 app.use(connect.cookieParser());
 app.use(yummy({
-    secret: 'foobar'
+    secret: '+lc|x[})E.S+ld2c@,u^abZ-v@jxJX,Y'
 }));
 
 app.use('/increment', function(req, res) {
@@ -37,7 +37,7 @@ test('foo', function(done) {
 
             var cookie = res.headers['set-cookie'][0];
             assert.equal(body, 'hello world\n');
-            assert.equal(cookie, 'connect.sess=eG6fkXz3VBoeT8wxEFYWVhuxTtmy%2FZsTCVXT7BXbIl0gI1MHqC1wIWStG8CyFBbl; Path=/');
+            assert.equal(cookie, 'connect.sess=Z9Nd%2F3ZFtCfjoj0AjTynVi0N71%2FIhNnAzH3UPRYj33hBIIamnRZfXvf5Dmv0s1s3; Path=/');
 
             server.close();
         });

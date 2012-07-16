@@ -4,7 +4,7 @@ Yummy is cookie session middleware for connect and its derivatives.
 
 ## why?
 
-Cause you already have to use a cookie for sessions so why do more IO to get the data.
+Cause you already have to use a cookie for sessions so why do more IO to get the data? Yummy encrypts the session data to prevent tampering as well as reading of the raw session data by the client.
 
 ## how?
 
@@ -20,7 +20,8 @@ var yummy = require('yummy');
 
 app.use(connect.cookieParser());
 app.use(yummy({
-    secret: 'fizzbuzz'
+    // see notes about the secret below, this is important!!
+    secret: '+lc|x[})E.S+ld2c@,u^abZ-v@jxJX,Y'
 });
 ```
 
@@ -30,6 +31,8 @@ You can configure yummy with the following options.
 
 ### secret [required]
 > the cookie will be encrypted using this secret string, keep it safe :)
+
+> The default encryption is aes256 which means your secret should be at least 256 bits (32 characters). It is best if you use a randomly generated string.
 
 ### cookie [optional]
 > the cookie options sets the default value for session cookies. You can
