@@ -41,11 +41,11 @@ module.exports = function (options) {
         // try to decipher the session cookie
         // if this fails we assume the cookie was altered or something bad happend
         // in this case we clear the session state as if a blank session was started
-        var decipher = crypto.createDecipher(algorithm, secret);
-        var body = decipher.update(raw_cookie, 'base64', 'utf8');
-        body += decipher.final('utf8');
-
         try {
+            var decipher = crypto.createDecipher(algorithm, secret);
+            var body = decipher.update(raw_cookie, 'base64', 'utf8');
+            body += decipher.final('utf8');
+
             return JSON.parse(body);
         } catch (e) {
             // no-op, will default to empty session

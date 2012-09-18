@@ -24,7 +24,6 @@ app.use('/increment', function(req, res) {
 app.use(function(req, res){
     // must add something to the session otherwise it won't be set
     req.session.foo = 'bar';
-
     res.end('hello world\n');
 });
 
@@ -49,15 +48,53 @@ test('foo', function(done) {
 });
 
 test('counter', function(done) {
+
     var server = app.listen(function() {
         var addr = server.address();
         var port = addr.port;
+
         request('http://localhost:' + port + '/increment', function(err, res, body) {
             assert.ok(!err);
             assert.equal(body, 1);
             request('http://localhost:' + port + '/increment', function(err, res, body) {
                 assert.ok(!err);
                 assert.equal(body, 2);
+
+                server.close();
+            });
+        });
+    });
+
+    server.on('close', function() {
+        done();
+    });
+});
+
+test('decipher fail', function(done) {
+    var server = app.listen(function() {
+        var addr = server.address();
+        var port = addr.port;
+
+        var jar = request.jar();
+
+        // add an invalid cookies string to cause decipher failure
+        jar.add(request.cookie('connect.sess=hahaha; Path=/'));
+
+        var opt = {
+            url: 'http://localhost:' + port + '/increment',
+            jar: jar
+        }
+
+        request(opt, function(err, res, body) {
+            assert.ok(!err);
+            assert.equal(body, 1);
+
+            // reset cookie to invalid state so session is reset
+            jar.add(request.cookie('connect.sess=hahaha; Path=/'));
+
+            request(opt, function(err, res, body) {
+                assert.ok(!err);
+                assert.equal(body, 1);
 
                 server.close();
             });
