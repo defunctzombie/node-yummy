@@ -1,5 +1,6 @@
 // builtin
 var crypto = require('crypto');
+var Buffer = require('buffer').Buffer;
 
 // 3rd party
 var cookie = require('cookie');
@@ -108,8 +109,10 @@ module.exports = function (options) {
             }
 
             var cipher = crypto.createCipher(algorithm, secret);
-            val = cipher.update(val, 'utf8', 'base64');
-            val += cipher.final('base64');
+            val = cipher.update(val, 'utf8', 'binary') + cipher.final('binary');
+
+            // convert to base64 for less bytes
+            val = Buffer(val, 'binary').toString('base64');
 
             res.setHeader('Set-Cookie', cookie.serialize(key, val, req.session.cookie));
         });
