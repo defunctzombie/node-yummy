@@ -67,6 +67,13 @@ module.exports = function (options) {
         // if no saved state, default object created
         var cookie_opt = req.session.cookie || cookie_options;
 
+        // if cookie was requested over secure connection
+        // make sure the secure flag is set
+        // if secure flag is already set, then don't set it again
+        if (req.secure && cookie_opt.secure === undefined) {
+            cookie_opt.secure = true;
+        }
+
         // for app access to set cookie options
         req.session.cookie = cookie_opt;
 
