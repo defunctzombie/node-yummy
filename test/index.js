@@ -36,7 +36,8 @@ test('foo', function(done) {
 
             var cookie = res.headers['set-cookie'][0];
             assert.equal(body, 'hello world\n');
-            assert.equal(cookie, 'connect.sess=Z9Nd%2F3ZFtCfjoj0AjTynVi0N71%2FIhNnAzH3UPRYj33hBIIamnRZfXvf5Dmv0s1s3; Path=/');
+            var exp = 'connect.sess=Z9Nd%2F3ZFtCfjoj0AjTynVlmu%2FEAuWUyHaLQlnpMhNrAE3qL4aDjKF5siMJFAlNAgKHnwIEOmZD7UkVpiI6eVvQ%3D%3D; Path=/; HttpOnly';
+            assert.equal(cookie, exp);
 
             server.close();
         });

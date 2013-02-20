@@ -22,6 +22,12 @@ module.exports = function (options) {
     // default path is '/';
     cookie_options.path = cookie_options.path || '/';
 
+    // no script access by default
+    // user must explicitly enable this because of the security implications
+    if (cookie_options.httpOnly === undefined) {
+        cookie_options.httpOnly = true;
+    }
+
     if (!secret) {
         throw new Error('`secret` required for yummy sessions');
     }
