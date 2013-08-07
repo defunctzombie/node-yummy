@@ -40,7 +40,7 @@ You can configure yummy with the following options.
 > I would suggest setting `httpOnly: true` and `secure: true` for a more secure setup in production.
 
 #### maxAge
-> the max age of the cookie in milliseconds
+> the max age of the cookie in seconds
 
 #### path
 > the path of the session cookie (default is '/')
