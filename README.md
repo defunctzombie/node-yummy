@@ -1,4 +1,4 @@
-# yummy [![Build Status](https://secure.travis-ci.org/shtylman/node-yummy.png?branch=master)](http://travis-ci.org/shtylman/node-yummy) #
+# yummy [![Build Status](https://secure.travis-ci.org/defunctzombie/node-yummy.png?branch=master)](http://travis-ci.org/defunctzombie/node-yummy) #
 
 Yummy is cookie session middleware for connect and its derivatives.
 
