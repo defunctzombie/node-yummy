@@ -12,14 +12,14 @@
     "test": "mocha"
   },
   "dependencies": {
-    "cookie": "0.0.4"
+    "cookie": "0.1.2",
+    "cookie-parser": "1.0.1"
   },
   "devDependencies": {
-    "mocha": "1.2.x",
-    "connect": "2.3.x",
-    "request": "2.9.x"
+    "mocha": "1.18.2",
+    "express": "4.1.1",
+    "request": "2.9.0"
   },
-  "optionalDependencies": {},
   "engines": {
     "node": "*"
   }

@@ -1,15 +1,13 @@
-// builtin
 var assert = require('assert');
 
-// 3rd party
-var connect = require('connect');
+var express = require('express');
 var request = require('request');
+var cookieParser = require('cookie-parser');
 
-// local
 var yummy = require('..');
 
-var app = connect();
-app.use(connect.cookieParser());
+var app = express();
+app.use(cookieParser());
 app.use(yummy({
     secret: '+lc|x[})E.S+ld2c@,u^abZ-v@jxJX,Y'
 }));

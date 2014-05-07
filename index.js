@@ -94,18 +94,19 @@ module.exports = function (options) {
         // if unchanged, it will not be resent to client
         var orig = JSON.stringify(req.session);
 
-        res.on('header', function() {
-
+        var writeHead = res.writeHead;
+        res.writeHead = function () {
             // if session was removed, remove from client
             if (!req.session) {
-                return res.clearCookie(key);
+                res.clearCookie(key);
+                return writeHead.apply(res, arguments);
             }
 
             var val = JSON.stringify(req.session);
 
             // if the session data did not change no need to resend cookie
             if (val === orig && !refresh) {
-                return;
+                return writeHead.apply(res, arguments);
             }
 
             var cipher = crypto.createCipher(algorithm, secret);
@@ -115,7 +116,8 @@ module.exports = function (options) {
             val = Buffer(val, 'binary').toString('base64');
 
             res.setHeader('Set-Cookie', cookie.serialize(key, val, req.session.cookie));
-        });
+            return writeHead.apply(res, arguments);
+        };
 
         next();
     };
