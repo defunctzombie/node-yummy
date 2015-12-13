@@ -19,6 +19,11 @@ app.use('/increment', function(req, res) {
     res.end(++req.session.count + '');
 });
 
+app.use('/undefined', function(req, res) {
+    req.session = {};
+    res.send('foo');
+});
+
 app.use(function(req, res){
     // must add something to the session otherwise it won't be set
     req.session.foo = 'bar';
@@ -105,3 +110,31 @@ test('decipher fail', function(done) {
     });
 });
 
+test('undefined', function(done) {
+    var server = app.listen(function() {
+        var addr = server.address();
+        var port = addr.port;
+
+        var jar = request.jar();
+
+        var opt = {
+            url: 'http://localhost:' + port + '/undefined',
+            jar: jar
+        }
+
+        request(opt, function(err, res, body) {
+            assert.ok(!err);
+            assert.equal(body, 'foo');
+
+            var cookie = res.headers['set-cookie'][0];
+            var exp = 'connect.sess=2IJspneHPx5DCYmknmQrWg%3D%3D; Path=/; HttpOnly';
+            assert.equal(cookie, exp);
+
+            server.close();
+        });
+    });
+
+    server.on('close', function() {
+        done();
+    });
+});

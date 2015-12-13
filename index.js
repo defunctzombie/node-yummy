@@ -115,7 +115,7 @@ module.exports = function (options) {
             // convert to base64 for less bytes
             val = Buffer(val, 'binary').toString('base64');
 
-            res.setHeader('Set-Cookie', cookie.serialize(key, val, req.session.cookie));
+            res.setHeader('Set-Cookie', cookie.serialize(key, val, req.session.cookie || cookie_opt));
             return writeHead.apply(res, arguments);
         };
 
